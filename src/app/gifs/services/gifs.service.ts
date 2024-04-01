@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 export class GifsService {
 
   private _tagsHistory: string[] = []
+  private apiKey:string = 'tyLt4mGBujs4UO4XavuevpNBEX8XS3ug'
 
   constructor() { }
 
@@ -12,9 +13,25 @@ export class GifsService {
     return [...this._tagsHistory]
   }
 
-  public searchTag (tag:string):void{
+  private organizeHistory(tag:string){
+    tag = tag.toLowerCase()
+    if (this._tagsHistory.includes(tag)){
+      this._tagsHistory = this._tagsHistory.filter((oldTag)=> oldTag!==tag)
+    }
+
     this._tagsHistory.unshift(tag)
-    console.log(this.tagsHistory)
+    this._tagsHistory= this.tagsHistory.splice(0,10)
+  }
+
+  async searchTag (tag:string):Promise<void>{
+    if (tag.length===0) return
+    this.organizeHistory(tag)
+
+    fetch('https://api.giphy.com/v1/gifs/search?api_key=tyLt4mGBujs4UO4XavuevpNBEX8XS3ug&q=valorant&limit=10')
+      .then(resp => resp.json())
+      .then(data => console.log(data))
+
+    //this._tagsHistory.unshift(tag)
   }
 
 }
