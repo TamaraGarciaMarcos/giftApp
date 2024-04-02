@@ -12,7 +12,12 @@ export class GifsService {
   private apiKey:string = 'tyLt4mGBujs4UO4XavuevpNBEX8XS3ug'
   private serviceUrl:string = 'https://api.giphy.com/v1/gifs'
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+
+    this.loadLocalStorage()
+    console.log('Gifs Service ready')
+
+   }
 
   get tagsHistory (){
 
@@ -27,6 +32,26 @@ export class GifsService {
 
     this._tagsHistory.unshift(tag)
     this._tagsHistory= this.tagsHistory.splice(0,10)
+    this.saveLocalStorage()
+  }
+
+  //método que guarda el historial en el LocalStorage
+  private saveLocalStorage():void{
+    localStorage.setItem('history', JSON.stringify(this._tagsHistory) )
+  }
+
+  //método que lee lo almacenado en el LocalStorage
+  private loadLocalStorage():void{
+    //si no hay datos que haga el return
+    if (!localStorage.getItem('history')) return
+    //Si hay datos:
+    this._tagsHistory= JSON.parse(localStorage.getItem('history')!)
+    //si no hya elementos no tiene que hacer nada
+    if (this._tagsHistory.length  ===0) return
+    //si hay elemntos tiene que buscar el primero
+    this.searchTag(this._tagsHistory[0])
+
+
   }
 
   searchTag (tag:string):void{
@@ -41,6 +66,7 @@ export class GifsService {
       //este observavble es del tipo de la interfaz creada
     this.http.get<SearchResponse>(`${ this.serviceUrl }/search`, {params})
       .subscribe(resp =>{
+        //gifs que se estan mostrando
         this.gifList= resp.data
         //console.log({ gifs: this.gifList})
       })
