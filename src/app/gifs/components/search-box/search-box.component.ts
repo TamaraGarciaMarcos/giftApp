@@ -10,8 +10,6 @@ import { GifsService } from '../../services/gifs.service';
       placeholder="Buscar gifs . . . "
       (keyup.enter)="searchTag()"
       #txtTagInput
-
-
       >
   `
 })
